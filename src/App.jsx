@@ -1,60 +1,72 @@
 import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
+import {Note} from './components/Note'
 import './App.css'
 
-function App() {
-  /*const [count, setCount] = useState(()=>{
-    return 4;
-  })
+function App(props) {
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const decrementCount = () => {
-    setCount(prevCount => prevCount - 1)
+  useEffect(() => { 
+    setTimeout(() =>{
+      
+    setLoading(true)
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(json => {
+        setNotes(json)
+        setLoading(false)
+      })
+
+  }, 2000)
+}, [])
+
+  const handleChange = (e) => {
+    setNewNote(e.target.value)
   }
-
-  const incrementCount = () => {
-    setCount(prevCount => prevCount + 1)
-  }*/
-
-  /*return(<div className="card">
-        <button onClick={decrementCount}>-</button>
-        <span>{count}</span>
-        <button onClick={incrementCount}>+</button>
-
-  </div>)*/
-  /*const [resourceType, setResourceType] = useState('posts')
-  const [items, setItems]= useState([])
-
-  useEffect(() => {
-    fetch(`https://jsonplaceholder.typicode.com/${resourceType}`)
-      .then((response) => response.json())
-      .then((json) => setItems(json));
-  },[resourceType])
-  <>
-   <div>
-    <button onClick={()=>setResourceType('posts')}>Posts</button>
-    <button onClick={()=>setResourceType('users')}>Users</button>
-    <button onClick={()=>setResourceType('comments')}>Comments</button>
-   </div>
-   <h1>{resourceType}</h1>
-   {items.map(item =>{
-    return <pre>{JSON.stringify(item)}</pre>
-   })}
-  </>*/
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
-  
-  const handleResizing = () => {
-
-      setWindowWidth(window.innerWidth)
-  }
-  useEffect(() => {
-    window.addEventListener('resize', handleResizing)
-    return () => {
-      window.removeEventListener('resize', handleResizing)
+  const handleSubmit = (e) => {
+    event.preventDefault()
+    const  noteToAddToState = {
+      id: notes.length + 1,
+      title: newNote,
+      body: newNote 
     }
-  },[])
+    setNotes((prevNotes) => prevNotes.concat(noteToAddToState))
+  setNewNote("")
+
+  }
+  //This will be executed before all notes are loaded. The effect was caused by the setTimeout function above.
+ /* if(notes.length === 0) {
+    return (
+      <div className="App">
+        <h1>Notes</h1>
+        <p>Notes loading...</p>
+      </div>
+    )
+  }*/
+  
   return (
-    <div>{windowWidth}</div>
+    <div>
+      <h1>Notes</h1>
+    {
+      loading ? <p>Loading...</p> : null
+    }
+      <ol>
+        {
+          notes
+          .map((note) => (
+            <Note key={note.id} {...note} />
+        ))}
+      </ol>
+      <form onSubmit={handleSubmit}>
+            <input type="text" onChange={handleChange} value={newNote} />
+            <button>Creat Nota</button>
+
+      </form>
+    </div>
   )
 }
+//00:18:39
 
 export default App
