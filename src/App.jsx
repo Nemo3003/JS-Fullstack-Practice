@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import {Note} from './components/Note'
+import {getAllNotes} from './services/notes/getAllNotes'
+import { createNote } from './services/notes/createNote'
 import axios from 'axios'
 import './App.css'
 
@@ -8,6 +10,7 @@ function App(props) {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState("")
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => { 
     setTimeout(() =>{
@@ -19,12 +22,16 @@ function App(props) {
         setNotes(json)
         setLoading(false)
       })*/
-      axios.get('https://jsonplaceholder.typicode.com/posts')
-      .then(response =>{
-        const {data} = response
-        setNotes(data)
-        setLoading(false)
-      })
+      getAllNotes()
+        .then(notes =>{
+          setNotes(notes)
+          setLoading(false)
+        })
+        .catch(e => {
+          console.error(e)
+          setError('THE API DID NOT RESPOND WELL')
+        })
+     
   }, 2000)
 }, [])
 
@@ -33,13 +40,20 @@ function App(props) {
   }
   const handleSubmit = (e) => {
     event.preventDefault()
+
+    
     const  noteToAddToState = {
-      id: notes.length + 1,
       title: newNote,
-      body: newNote 
+      body: newNote,
+      userId: 1 
     }
-    setNotes((prevNotes) => prevNotes.concat(noteToAddToState))
-  setNewNote("")
+      createNote(noteToAddToState)
+        .then((newNote) => {
+          setNotes(prevNotes.concat(newNote))
+          setNewNote("")
+        })
+    //setNotes((prevNotes) => prevNotes.concat(noteToAddToState))
+
 
   }
   //This will be executed before all notes are loaded. The effect was caused by the setTimeout function above.
@@ -58,6 +72,7 @@ function App(props) {
     {
       loading ? <p>Loading...</p> : null
     }
+    
       <ol>
         {
           notes
@@ -70,6 +85,9 @@ function App(props) {
             <button>Creat Nota</button>
 
       </form>
+      {
+      error? error : ""
+    }
     </div>
   )
 }
