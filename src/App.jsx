@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import {Note} from './components/Note'
+import axios from 'axios'
 import './App.css'
 
 function App(props) {
@@ -12,13 +13,18 @@ function App(props) {
     setTimeout(() =>{
       
     setLoading(true)
-    fetch('https://jsonplaceholder.typicode.com/posts')
+   /* fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => response.json())
       .then(json => {
         setNotes(json)
         setLoading(false)
+      })*/
+      axios.get('https://jsonplaceholder.typicode.com/posts')
+      .then(response =>{
+        const {data} = response
+        setNotes(data)
+        setLoading(false)
       })
-
   }, 2000)
 }, [])
 
