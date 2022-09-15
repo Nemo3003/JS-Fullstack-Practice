@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
+const mongoDB = "mongodb+srv://nemo3003:<password>@cluster0.prrlwu2.mongodb.net/?retryWrites=true&w=majority"
 
-const mongoDB = 'mongodb://127.0.0.1/my_database';
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology:true});
 
 const db = mongoose.connection;
